@@ -1,10 +1,14 @@
 package com.capybara.core.model
 
-class Resource (
-    val name: String,
-    val methods: List<Method>,
-    val properties: List<Property>
-)
+import com.capybara.core.dsl.ResourceBuilder
+
+open class Resource(builderBody: ResourceBuilder.() -> Unit) {
+    private val resourceBuilder = ResourceBuilder().apply { builderBody() }
+
+    val name = resourceBuilder.name
+    val methods = resourceBuilder.methods
+    val properties = resourceBuilder.properties
+}
 
 abstract class Method(val name: String) {
 
@@ -62,7 +66,7 @@ fun validateProperties():Boolean{
     return true;
 }
 
-class Property(
+data class Property(
     val name: String,
     val type: PropertyType
 )
