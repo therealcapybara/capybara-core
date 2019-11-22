@@ -1,3 +1,8 @@
 package com.capybara.core.http
 
-class HttpResponse
+import com.capybara.core.model.Resource
+
+class HttpResponse (
+    val body: Resource,
+    val status: String
+)
