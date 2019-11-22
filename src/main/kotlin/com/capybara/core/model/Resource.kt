@@ -10,47 +10,15 @@ open class Resource(builderBody: ResourceBuilder.() -> Unit) {
     val properties = resourceBuilder.properties
 }
 
-abstract class Method(val name: String) {
+abstract class Method(val name: String) {}
 
-    //TODO change path to URI parameters
-    abstract fun applyMethod(path: String, body: Resource?): Resource
-}
+object Get : Method("GET"){}
 
-object Get : Method("GET"){
+object Post : Method("POST")
 
-    override fun applyMethod(path: String, body: Resource?): Resource {
-        validateProperties()
-        //TODO fetch from DB with parameters
-        return Resource("funciona", emptyList(), emptyList())
-    }
-}
+object Delete : Method("DELETE"){}
 
-object Post : Method("POST"){
-    override fun applyMethod(path: String, body: Resource?): Resource {
-        validateProperties()
-        TODO("not implemented")
-        return Resource("funciona", emptyList(), emptyList())
-    }
-
-}
-
-object Delete : Method("DELETE"){
-    override fun applyMethod(path: String, body: Resource?): Resource {
-        validateProperties()
-        TODO("not implemented")
-        return Resource("funciona", emptyList(), emptyList())
-    }
-
-}
-
-object Put : Method("PUT") {
-    override fun applyMethod(path: String, body: Resource?): Resource {
-        validateProperties()
-        TODO("not implemented")
-        return Resource("funciona", emptyList(), emptyList())
-    }
-
-}
+object Put : Method("PUT") {}
 
 //open class Method
 //

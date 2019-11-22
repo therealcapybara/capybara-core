@@ -11,8 +11,9 @@ class HttpHandler(
             request.path.contains(it.name)
         }.flatMap {
             it.methods.filter { method -> request.method == method.name }
-        }.map { it.applyMethod(request.path, request.body)
-        }.map { HttpResponse(it, "SUCCESS")
+        }.map {
+            HttpResponse("body", "OK")
         }.first()
+
     }
 }
