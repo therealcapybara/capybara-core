@@ -1,9 +1,7 @@
 package com.capybara.core.http
 
-import com.capybara.core.backend.data.*
-import com.capybara.core.model.Backend
-import com.capybara.core.model.Get
-import com.capybara.core.model.Method
+import com.capybara.core.backend.data.DataSourceFactory
+import com.capybara.core.backend.data.DatasourceDispatcher
 import com.capybara.core.model.Resource
 import io.reactivex.Single
 

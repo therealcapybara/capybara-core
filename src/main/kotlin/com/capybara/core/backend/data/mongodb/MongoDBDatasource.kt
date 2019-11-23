@@ -59,6 +59,7 @@ class MongoDBDatasource(private val collection: MongoCollection<Document>) : Dat
     }
 
     override fun findAll(resource: Resource): Observable<ResourceBlob> {
+
         return collection.rxFind().map { MongoDbResourceBlob(it) }
     }
 

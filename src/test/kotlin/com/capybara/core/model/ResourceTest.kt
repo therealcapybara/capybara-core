@@ -54,4 +54,5 @@ class ResourceTest {
 
         assertEquals(MongoDbBackend("test", "xpto", "localhost", 27017), victim.backend)
     }
+
 }

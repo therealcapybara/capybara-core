@@ -11,7 +11,6 @@ import io.reactivex.Single
 object DatasourceDispatcher {
 
     fun dispatch(request: HttpRequest, resource: Resource, datasource: DataSource): Single<HttpResponse> {
-
         val method = resource.methods.first { method -> request.method == method.name }
         return when (method) {
             is Get -> dispatchGet(request, resource, datasource)
@@ -21,7 +20,7 @@ object DatasourceDispatcher {
 
     fun dispatchGet(request: HttpRequest, resource: Resource, datasource: DataSource): Single<HttpResponse> {
         val pathVariables = request.path.split("/")
-        val isSingleResourceRequest = pathVariables.size > 1
+        val isSingleResourceRequest = pathVariables.size - 1 > 1
         return if (isSingleResourceRequest) {
             datasource
                 .find(resource, StringResourceIdentifier(pathVariables.last()))
