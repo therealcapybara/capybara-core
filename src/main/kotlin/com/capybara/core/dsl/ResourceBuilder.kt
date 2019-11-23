@@ -6,6 +6,7 @@ class ResourceBuilder {
     lateinit var name: String
     lateinit var properties: MutableList<Property>
     lateinit var methods: MutableList<Method>
+    lateinit var backend: Backend
 
     fun name(name: String) {
         this.name = name
@@ -19,6 +20,10 @@ class ResourceBuilder {
     fun properties(body: PropertiesBuilder.() -> Unit) {
         properties = mutableListOf()
         PropertiesBuilder(this).body()
+    }
+
+    fun backend(body: BackendBuilder.() -> Unit) {
+        BackendBuilder(this).body()
     }
 }
 
@@ -43,5 +48,11 @@ class MethodsBuilder(private val resourceBuilder: ResourceBuilder) {
 class PropertiesBuilder(private val resourceBuilder: ResourceBuilder) {
     fun property(name: String, value: PropertyType) {
         resourceBuilder.properties.add(Property(name, value))
+    }
+}
+
+class BackendBuilder(private val resourceBuilder: ResourceBuilder) {
+    fun mongoDb(collection: String = resourceBuilder.name, database: String, host: String, port: Int) {
+        resourceBuilder.backend = MongoDbBackend(collection,  database, host, port)
     }
 }

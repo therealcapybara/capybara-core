@@ -8,6 +8,7 @@ open class Resource(builderBody: ResourceBuilder.() -> Unit) {
     val name = resourceBuilder.name
     val methods = resourceBuilder.methods
     val properties = resourceBuilder.properties
+    val backend = resourceBuilder.backend
 }
 
 abstract class Method(val name: String)
@@ -28,3 +29,13 @@ data class Property(
 open class PropertyType
 
 object TextType : PropertyType()
+
+
+interface Backend
+
+data class MongoDbBackend(
+    val collectionName: String,
+    val database: String,
+    val host: String,
+    val port: Int
+) : Backend

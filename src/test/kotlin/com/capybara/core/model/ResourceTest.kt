@@ -11,6 +11,7 @@ class ResourceTest {
             name("test")
             methods {  }
             properties { }
+            backend { mongoDb(host = "localhost", port = 27017, database = "sdgv") }
         }) {}
 
         assertEquals("test", victim.name)
@@ -22,6 +23,7 @@ class ResourceTest {
             name("test")
             methods { get() }
             properties { }
+            backend { mongoDb(host = "localhost", port = 27017, database = "xpto") }
         }) {}
 
         assertEquals(listOf(Get), victim.methods)
@@ -33,8 +35,23 @@ class ResourceTest {
             name("test")
             methods { get() }
             properties { property("prop", TextType) }
+            backend { mongoDb(host = "localhost", port = 27017,  database = "xpto") }
         }) {}
 
         assertEquals(listOf(Property("prop", TextType)), victim.properties)
+    }
+
+    @Test
+    fun `should define a resource backend as mongodb`() {
+        val victim = object : Resource({
+            name("test")
+            methods { get() }
+            properties { property("prop", TextType) }
+            backend {
+                mongoDb(host = "localhost", port = 27017,  database = "xpto")
+            }
+        }) {}
+
+        assertEquals(MongoDbBackend("test", "xpto", "localhost", 27017), victim.backend)
     }
 }

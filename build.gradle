@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.capybara'
-version '1.0.1-SNAPSHOT'
+version '1.0.2-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -14,6 +14,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.mongodb:mongodb-driver-reactivestreams:1.12.0"
     implementation "io.reactivex.rxjava2:rxjava:2.2.14"
+    implementation "com.google.code.gson:gson:2.8.6"
     testImplementation "org.junit.jupiter:junit-jupiter:5.5.2"
 }
 

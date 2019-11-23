@@ -7,17 +7,14 @@ import com.capybara.core.model.Resource
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.result.UpdateResult
 import com.mongodb.reactivestreams.client.MongoCollection
-import com.mongodb.reactivestreams.client.MongoDatabase
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.bson.Document
 import org.bson.conversions.Bson
 
-class MongoDBDatasource(private val mongoDatabase: MongoDatabase) : DataSource {
+class MongoDBDatasource(private val collection: MongoCollection<Document>) : DataSource {
 
     override fun find(resource: Resource, identifier: ResourceIdentifier): Single<ResourceBlob> {
-        val collection = mongoDatabase.getCollection(resource.name)
-
         val id = identifier.toString()
 
         return collection.rxFind(eq("id", id))
@@ -25,7 +22,6 @@ class MongoDBDatasource(private val mongoDatabase: MongoDatabase) : DataSource {
     }
 
     override fun delete(resource: Resource, identifier: ResourceIdentifier): Single<Unit> {
-        val collection = mongoDatabase.getCollection(resource.name)
         val id = identifier.toString()
         return Single.fromPublisher(collection.deleteOne(eq("id", id))).map { Unit }
     }
@@ -35,8 +31,6 @@ class MongoDBDatasource(private val mongoDatabase: MongoDatabase) : DataSource {
     }
 
     override fun create(resource: Resource, data: ResourceBlob): Single<ResourceBlob> {
-        val collection = mongoDatabase.getCollection(resource.name)
-
         val document = resource.properties
             .map { Pair(it.name, data.getValue(it) ) }
             .fold(Document()) { doc, values ->
@@ -49,8 +43,6 @@ class MongoDBDatasource(private val mongoDatabase: MongoDatabase) : DataSource {
     }
 
     override fun update(resource: Resource, identifier: ResourceIdentifier, data: ResourceBlob): Single<ResourceBlob> {
-        val collection = mongoDatabase.getCollection(resource.name)
-
         val id = identifier.toString()
 
         return collection.rxFind(eq("id", id))
@@ -67,7 +59,6 @@ class MongoDBDatasource(private val mongoDatabase: MongoDatabase) : DataSource {
     }
 
     override fun findAll(resource: Resource): Observable<ResourceBlob> {
-        val collection = mongoDatabase.getCollection(resource.name)
         return collection.rxFind().map { MongoDbResourceBlob(it) }
     }
 
