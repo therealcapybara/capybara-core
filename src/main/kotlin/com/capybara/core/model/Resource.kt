@@ -10,29 +10,15 @@ open class Resource(builderBody: ResourceBuilder.() -> Unit) {
     val properties = resourceBuilder.properties
 }
 
-abstract class Method(val name: String) {}
+abstract class Method(val name: String)
 
-object Get : Method("GET"){}
+object Get : Method("GET")
 
 object Post : Method("POST")
 
-object Delete : Method("DELETE"){}
+object Delete : Method("DELETE")
 
-object Put : Method("PUT") {}
-
-//open class Method
-//
-//object Get : Method()
-//
-//object Post : Method()
-//
-//object Put : Method()
-//
-//object Delete : Method()
-
-fun validateProperties():Boolean{
-    return true;
-}
+object Put : Method("PUT")
 
 data class Property(
     val name: String,
