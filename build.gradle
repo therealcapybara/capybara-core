@@ -39,7 +39,7 @@ publishing {
         create(MavenPublication) {
             groupId = "com.capybara"
             artifactId = "capybara-core"
-            version = "1.0.5-SNAPSHOT"
+            version = version
 
             from components.kotlin
 

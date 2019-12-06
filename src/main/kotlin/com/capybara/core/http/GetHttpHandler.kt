@@ -1,24 +1,13 @@
-package com.capybara.core.backend.data
+package com.capybara.core.http
 
-import com.capybara.core.http.HttpRequest
-import com.capybara.core.http.HttpResponse
-import com.capybara.core.model.Get
-import com.capybara.core.model.Post
+import com.capybara.core.backend.data.*
 import com.capybara.core.model.Resource
 import com.google.gson.Gson
 import io.reactivex.Single
 
-object DatasourceDispatcher {
+object GetHttpHandler {
 
-    fun dispatch(request: HttpRequest, resource: Resource, datasource: DataSource): Single<HttpResponse> {
-        val method = resource.methods.first { method -> request.method == method.name }
-        return when (method) {
-            is Get -> dispatchGet(request, resource, datasource)
-            else -> throw NotImplementedError(method::class.toString())
-        }
-    }
-
-    fun dispatchGet(request: HttpRequest, resource: Resource, datasource: DataSource): Single<HttpResponse> {
+    fun handle(request: HttpRequest, resource: Resource, datasource: DataSource): Single<HttpResponse> {
         val pathVariables = request.path.split("/")
         val isSingleResourceRequest = pathVariables.size - 1 > 1
         return if (isSingleResourceRequest) {
@@ -35,7 +24,7 @@ object DatasourceDispatcher {
         }
     }
 
-    fun toMap(resourceBlob: ResourceBlob, resource: Resource): Map<String, Any>{
+    private fun toMap(resourceBlob: ResourceBlob, resource: Resource): Map<String, Any> {
         return resource.properties
             .fold(mutableMapOf<String, Any>()) { map, property ->
                 resourceBlob.getValue(property)?.let { map.put(property.name, it) }
@@ -43,12 +32,9 @@ object DatasourceDispatcher {
             }
     }
 
-    private fun toJsonHttpResponse( response: Any): HttpResponse{
+    private fun toJsonHttpResponse(response: Any): HttpResponse {
         val response = Gson().toJson(response, response::class.java)
 
         return HttpResponse(response, "OK")
     }
-
-
-
 }

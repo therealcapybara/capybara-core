@@ -14,16 +14,20 @@ import org.bson.conversions.Bson
 
 class MongoDBDatasource(private val collection: MongoCollection<Document>) : DataSource {
 
+    companion object {
+        private const val ID_FIELD = "id"
+    }
+
     override fun find(resource: Resource, identifier: ResourceIdentifier): Single<ResourceBlob> {
         val id = identifier.toString()
 
-        return collection.rxFind(eq("id", id))
+        return collection.rxFind(eq(ID_FIELD, id))
             .map { MongoDbResourceBlob(it) }
     }
 
     override fun delete(resource: Resource, identifier: ResourceIdentifier): Single<Unit> {
         val id = identifier.toString()
-        return Single.fromPublisher(collection.deleteOne(eq("id", id))).map { Unit }
+        return Single.fromPublisher(collection.deleteOne(eq(ID_FIELD, id))).map { Unit }
     }
 
     override fun deleteAll(resource: Resource, identifier: ResourceIdentifier): Single<Unit> {
@@ -38,6 +42,10 @@ class MongoDBDatasource(private val collection: MongoCollection<Document>) : Dat
                 doc
             }
 
+        val identifier = newMongoResourceIdentifier()
+
+        document[ID_FIELD] = identifier.toString()
+
         return Single.fromPublisher(collection.insertOne(document))
             .map { MongoDbResourceBlob(document) }
     }
@@ -45,17 +53,14 @@ class MongoDBDatasource(private val collection: MongoCollection<Document>) : Dat
     override fun update(resource: Resource, identifier: ResourceIdentifier, data: ResourceBlob): Single<ResourceBlob> {
         val id = identifier.toString()
 
-        return collection.rxFind(eq("id", id))
-            .map { document ->
-                resource.properties
-                    .map { prop -> Pair(prop.name, data.getValue(prop) ) }
-                    .fold(document) { doc, values ->
-                        doc[values.first] = values.second
-                        doc
-                    }
+        val updatedResource = resource.properties
+            .map { prop -> Pair(prop.name, data.getValue(prop) ) }
+            .fold(Document()) { doc, values ->
+                doc[values.first] = values.second
+                doc
             }
-            .flatMap { document -> collection.rxUpdateOne(eq("id", id), document).map { document } }
-            .map { MongoDbResourceBlob(it) }
+
+        return collection.rxReplaceOne(eq(ID_FIELD, id), updatedResource).map { updatedResource }.map { MongoDbResourceBlob(it) }
     }
 
     override fun findAll(resource: Resource): Observable<ResourceBlob> {
@@ -63,8 +68,8 @@ class MongoDBDatasource(private val collection: MongoCollection<Document>) : Dat
         return collection.rxFind().map { MongoDbResourceBlob(it) }
     }
 
-    private fun MongoCollection<Document>.rxUpdateOne(filter: Bson, update: Bson): Single<UpdateResult> {
-        return Single.fromPublisher(this.updateOne(filter, update))
+    private fun MongoCollection<Document>.rxReplaceOne(filter: Bson, update: Document): Single<UpdateResult> {
+        return Single.fromPublisher(this.replaceOne(filter, update))
     }
 
     private fun MongoCollection<Document>.rxFind(filter: Bson): Single<Document> {
